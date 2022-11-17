@@ -1,19 +1,16 @@
 package com.demo.sample.service;
 
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
+public class UserService {
 
-public class Service {
+  private static UserService service;
 
-  private static Service service;
-
-  private Service() {
+  private UserService() {
 
   }
 
-  public static Service create() {
+  public static UserService create() {
     if (service == null) {
-      return new Service();
+      return new UserService();
     } else {
       return service;
     }

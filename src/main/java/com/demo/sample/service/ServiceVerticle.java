@@ -8,14 +8,14 @@ import java.util.logging.Logger;
 
 public class ServiceVerticle extends AbstractVerticle {
 
-  private Service service;
+  private UserService service;
   private final static Logger LOGGER = Logger.getLogger(ServiceVerticle.class.getName());
 
   @Override
   public void start() throws Exception {
     System.out.println("Started ServiceVerticle ");
 
-    service = Service.create();
+    service = UserService.create();
     EventBus eb = vertx.eventBus();
 
     eb.<JsonObject>consumer("user-create-service", message -> {
