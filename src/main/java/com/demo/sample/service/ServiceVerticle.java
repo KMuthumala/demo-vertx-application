@@ -24,7 +24,7 @@ public class ServiceVerticle extends AbstractVerticle {
         if (reply.succeeded()) {
           message.reply(reply.result().body());
         } else {
-          message.fail(500, "Internal Server Error");
+          message.fail(500, reply.cause().getMessage());
         }
       });
     });
@@ -34,7 +34,7 @@ public class ServiceVerticle extends AbstractVerticle {
         if (reply.succeeded()) {
           message.reply(reply.result().body());
         } else {
-          message.fail(500, "Internal Server Error");
+          message.fail(500, reply.cause().getMessage());
         }
       });
     });

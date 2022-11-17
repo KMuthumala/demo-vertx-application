@@ -41,7 +41,7 @@ public class ApiVerticle extends AbstractVerticle {
       if (reply.succeeded()) {
         routingContext.request().response().setStatusCode(200).end(Json.encodePrettily(reply.result().body()));
       } else {
-        routingContext.request().response().setStatusCode(500).end("Server Error");
+        routingContext.request().response().setStatusCode(500).end(reply.cause().getMessage());
       }
     });
   }
@@ -55,7 +55,7 @@ public class ApiVerticle extends AbstractVerticle {
           .putHeader("content-type","application/json")
           .end(Json.encodePrettily(reply.result().body()));
       } else {
-        routingContext.request().response().setStatusCode(500).end("Server Error");
+        routingContext.request().response().setStatusCode(500).end(reply.cause().getMessage());
       }
     });
   }

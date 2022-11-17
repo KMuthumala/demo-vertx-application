@@ -42,7 +42,7 @@ public class UserRepository {
       ).onSuccess(res -> {
         LOGGER.info("users get successfully");
       }).onFailure(failure -> {
-        LOGGER.severe(failure.getCause().getMessage());
+        LOGGER.severe(failure.getMessage());
       });
   }
 
