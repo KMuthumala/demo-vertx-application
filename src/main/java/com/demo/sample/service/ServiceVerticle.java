@@ -1,5 +1,6 @@
 package com.demo.sample.service;
 
+import com.demo.sample.definitions.IAddressStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
@@ -18,8 +19,8 @@ public class ServiceVerticle extends AbstractVerticle {
     service = UserService.create();
     EventBus eb = vertx.eventBus();
 
-    eb.<JsonObject>consumer("user-create-service", message -> {
-      eb.request("user-create-repository", message.body().copy(), reply -> {
+    eb.<JsonObject>consumer(IAddressStore.USER_CREATION_SERVICE_LEVEL, message -> {
+      eb.request(IAddressStore.USER_CREATION_REPOSITORY_LEVEL, message.body().copy(), reply -> {
         if (reply.succeeded()) {
           message.reply(reply.result().body());
         } else {
@@ -28,8 +29,8 @@ public class ServiceVerticle extends AbstractVerticle {
       });
     });
 
-    eb.<JsonObject>consumer("users-get-service", message -> {
-      eb.request("users-get-repository", "", reply -> {
+    eb.<JsonObject>consumer(IAddressStore.ALL_USER_GETTING_SERVICE_LEVEL, message -> {
+      eb.request(IAddressStore.ALL_USER_GETTING_REPOSITORY_LEVEL, "", reply -> {
         if (reply.succeeded()) {
           message.reply(reply.result().body());
         } else {

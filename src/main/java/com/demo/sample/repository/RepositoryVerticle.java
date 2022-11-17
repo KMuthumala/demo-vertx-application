@@ -1,5 +1,6 @@
 package com.demo.sample.repository;
 
+import com.demo.sample.definitions.IAddressStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
@@ -43,7 +44,7 @@ public class RepositoryVerticle extends AbstractVerticle {
 
     EventBus eb = vertx.eventBus();
 
-    eb.<JsonObject>consumer("user-create-repository", message -> {
+    eb.<JsonObject>consumer(IAddressStore.USER_CREATION_REPOSITORY_LEVEL, message -> {
       LOGGER.info("Received New User Registration");
       userRepository.save(User.of(message.body().copy().getString("name"), message.body().copy().getString("email")))
         .onSuccess(success -> {
@@ -54,7 +55,7 @@ public class RepositoryVerticle extends AbstractVerticle {
         });
     });
 
-    eb.<JsonObject>consumer("users-get-repository", message -> {
+    eb.<JsonObject>consumer(IAddressStore.ALL_USER_GETTING_REPOSITORY_LEVEL, message -> {
 
       userRepository.findAll()
         .onSuccess(success -> {

@@ -1,5 +1,6 @@
 package com.demo.sample.api;
 
+import com.demo.sample.definitions.IAddressStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
@@ -36,7 +37,7 @@ public class ApiVerticle extends AbstractVerticle {
 
   private void createNewUser(RoutingContext routingContext) {
     LOGGER.info("Get all users request found...");
-    vertx.eventBus().<JsonObject>request("user-create-service", routingContext.body().asJsonObject(), reply -> {
+    vertx.eventBus().<JsonObject>request(IAddressStore.USER_CREATION_SERVICE_LEVEL, routingContext.body().asJsonObject(), reply -> {
       if (reply.succeeded()) {
         routingContext.request().response().setStatusCode(200).end(Json.encodePrettily(reply.result().body()));
       } else {
@@ -47,7 +48,7 @@ public class ApiVerticle extends AbstractVerticle {
 
   private void getAllUsers(RoutingContext routingContext) {
     LOGGER.info("New user creation request found...");
-    vertx.eventBus().<JsonObject>request("users-get-service", "", reply -> {
+    vertx.eventBus().<JsonObject>request(IAddressStore.ALL_USER_GETTING_SERVICE_LEVEL, "", reply -> {
       if (reply.succeeded()) {
         routingContext.request().response()
           .setStatusCode(200)
