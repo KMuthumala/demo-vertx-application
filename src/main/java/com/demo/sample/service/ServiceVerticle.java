@@ -19,8 +19,6 @@ public class ServiceVerticle extends AbstractVerticle {
     EventBus eb = vertx.eventBus();
 
     eb.<JsonObject>consumer("user-create-service", message -> {
-      LOGGER.info(message.body().encodePrettily());
-
       eb.request("user-create-repository", message.body().copy(), reply -> {
         if (reply.succeeded()) {
           message.reply(reply.result().body());
@@ -29,6 +27,17 @@ public class ServiceVerticle extends AbstractVerticle {
         }
       });
     });
+
+    eb.<JsonObject>consumer("users-get-service", message -> {
+      eb.request("users-get-repository", "", reply -> {
+        if (reply.succeeded()) {
+          message.reply(reply.result().body());
+        } else {
+          message.fail(500, "Internal Server Error");
+        }
+      });
+    });
+
 
   }
 

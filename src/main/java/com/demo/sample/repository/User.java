@@ -1,5 +1,9 @@
 package com.demo.sample.repository;
 
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
+import java.util.List;
 import java.util.UUID;
 
 public class User {
@@ -18,6 +22,22 @@ public class User {
     data.setName(title);
     data.setEmail(content);
     return data;
+  }
+
+  public static JsonObject toJsonObject(User user) {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("id", user.getId().toString());
+    jsonObject.put("name", user.getName());
+    jsonObject.put("email", user.getEmail());
+    return jsonObject;
+  }
+
+  public static JsonArray toJsonArray(List<User> userList) {
+    JsonArray jsonArray = new JsonArray();
+    userList.forEach(user -> {
+      jsonArray.add(User.toJsonObject(user));
+    });
+    return jsonArray;
   }
 
   public UUID getId() {

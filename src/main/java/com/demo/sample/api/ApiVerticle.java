@@ -19,26 +19,40 @@ public class ApiVerticle extends AbstractVerticle {
 
     Router router = Router.router(vertx);
     router.post("/api/v1/register").produces("application/json").consumes("application/json").handler(BodyHandler.create()).handler(this::createNewUser);
-    router.get("/api/v1/users").produces("application/json"); // TODO
+    router.get("/api/v1/users").produces("application/json").handler(BodyHandler.create()).handler(this::getAllUsers);
     router.get("/api/v1/user/:name").produces("application/json"); // TODO
 
     vertx.createHttpServer().requestHandler(router).listen(8888)
       .onSuccess(server -> {
         startPromise.complete();
-        System.out.println("HTTP server started on port " + server.actualPort());
+        LOGGER.info("HTTP server started on port " + server.actualPort());
       })
       .onFailure(event -> {
           startPromise.fail(event);
-          System.out.println("Failed to start HTTP server:" + event.getMessage());
+        LOGGER.severe("Failed to start HTTP server:" + event.getMessage());
         }
       );
   }
 
   private void createNewUser(RoutingContext routingContext) {
-    LOGGER.info("New user creation request found...");
+    LOGGER.info("Get all users request found...");
     vertx.eventBus().<JsonObject>request("user-create-service", routingContext.body().asJsonObject(), reply -> {
       if (reply.succeeded()) {
         routingContext.request().response().setStatusCode(200).end(Json.encodePrettily(reply.result().body()));
+      } else {
+        routingContext.request().response().setStatusCode(500).end("Server Error");
+      }
+    });
+  }
+
+  private void getAllUsers(RoutingContext routingContext) {
+    LOGGER.info("New user creation request found...");
+    vertx.eventBus().<JsonObject>request("users-get-service", "", reply -> {
+      if (reply.succeeded()) {
+        routingContext.request().response()
+          .setStatusCode(200)
+          .putHeader("content-type","application/json")
+          .end(Json.encodePrettily(reply.result().body()));
       } else {
         routingContext.request().response().setStatusCode(500).end("Server Error");
       }

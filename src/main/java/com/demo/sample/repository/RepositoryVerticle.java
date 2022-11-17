@@ -19,10 +19,10 @@ public class RepositoryVerticle extends AbstractVerticle {
   @Override
   public void stop() throws Exception {
     pgPool.close()
-      .onSuccess(closed->{
-      LOGGER.info("DB Connection Closed Successfully");
-    })
-      .onFailure(failure->{
+      .onSuccess(closed -> {
+        LOGGER.info("DB Connection Closed Successfully");
+      })
+      .onFailure(failure -> {
         LOGGER.info("DB Connection Closed Error");
       });
   }
@@ -41,20 +41,28 @@ public class RepositoryVerticle extends AbstractVerticle {
 
     userRepository = UserRepository.create(pgPool);
 
-
     EventBus eb = vertx.eventBus();
+
     eb.<JsonObject>consumer("user-create-repository", message -> {
       LOGGER.info("Received New User Registration");
-
       userRepository.save(User.of(message.body().copy().getString("name"), message.body().copy().getString("email")))
         .onSuccess(success -> {
-          message.reply(success);
+          message.reply(new JsonObject().put("id",success.toString()));
         })
         .onFailure(failure -> {
           message.fail(500, failure.getMessage());
         });
+    });
 
+    eb.<JsonObject>consumer("users-get-repository", message -> {
 
+      userRepository.findAll()
+        .onSuccess(success -> {
+          message.reply(User.toJsonArray(success));
+        })
+        .onFailure(failure -> {
+          message.fail(500, failure.getMessage());
+        });
     });
   }
 
