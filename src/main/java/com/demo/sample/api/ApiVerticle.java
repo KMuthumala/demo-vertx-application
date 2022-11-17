@@ -20,7 +20,7 @@ public class ApiVerticle extends AbstractVerticle {
 
     Router router = Router.router(vertx);
     router.post("/api/v1/register").produces("application/json").consumes("application/json").handler(BodyHandler.create()).handler(this::createNewUser);
-    router.get("/api/v1/users").produces("application/json").handler(BodyHandler.create()).handler(this::getAllUsers);
+    router.get("/api/v1/users").produces("application/json").handler(this::getAllUsers);
     router.get("/api/v1/user/:name").produces("application/json"); // TODO
 
     vertx.createHttpServer().requestHandler(router).listen(8888)
@@ -39,7 +39,10 @@ public class ApiVerticle extends AbstractVerticle {
     LOGGER.info("Get all users request found...");
     vertx.eventBus().<JsonObject>request(IAddressStore.USER_CREATION_SERVICE_LEVEL, routingContext.body().asJsonObject(), reply -> {
       if (reply.succeeded()) {
-        routingContext.request().response().setStatusCode(200).end(Json.encodePrettily(reply.result().body()));
+        routingContext.request().response()
+          .setStatusCode(200)
+          .putHeader("content-type","application/json")
+          .end(Json.encodePrettily(reply.result().body()));
       } else {
         routingContext.request().response().setStatusCode(500).end(reply.cause().getMessage());
       }
